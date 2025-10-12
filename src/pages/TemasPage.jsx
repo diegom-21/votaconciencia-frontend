@@ -161,13 +161,13 @@ const TemasPage = () => {
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-50">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Nombre
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Ícono
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Acciones
                                     </th>
                                 </tr>
@@ -175,11 +175,11 @@ const TemasPage = () => {
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {temas.map((tema) => (
                                     <tr key={tema.tema_id}>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
                                             {tema.nombre_tema}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            {iconComponents[tema.icono_url] ? (
+                                        <td className="px-6 py-4 whitespace-nowrap text-center">
+                                            <div className="flex justify-center">{iconComponents[tema.icono_url] ? (
                                                 iconComponents[tema.icono_url]
                                             ) : tema.icono_url ? (
                                                 <img
@@ -194,8 +194,9 @@ const TemasPage = () => {
                                                     </svg>
                                                 </div>
                                             )}
+                                            </div>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                             <button
                                                 className="text-[#0D80F2] hover:text-[#0A6AC8] mr-4"
                                                 onClick={() => {

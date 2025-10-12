@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css'; // opcional, para estilos
 
-const PropuestaForm = () => {
+
+const PropuestaForm = ({ fetchPropuestas, onClose }) => {
     const [candidatos, setCandidatos] = useState([]);
     const [temas, setTemas] = useState([]);
     const [formData, setFormData] = useState({
@@ -10,6 +13,7 @@ const PropuestaForm = () => {
         tema_id: '',
         titulo_propuesta: ''
     });
+    const [loading, setLoading] = useState(false); // Estado para el loader
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -39,15 +43,39 @@ const PropuestaForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true); // Mostrar loader
         try {
             await axios.post('/api/propuestas', formData);
-            alert('Propuesta creada exitosamente');
-            navigate('/admin/propuestas');
+
+            Swal.fire({
+                icon: 'success',
+                title: '¡Propuesta creada!',
+                text: 'El resumen fue generado correctamente.',
+                timer: 2000,
+                showConfirmButton: false
+            });
+
+            // Cerrar el modal tras éxito
+            if (typeof onClose === 'function') {
+                onClose();
+            }
+
+            // Refrescar la tabla
+            if (typeof fetchPropuestas === 'function') {
+                fetchPropuestas();
+            }
         } catch (error) {
             console.error('Error al crear la propuesta:', error);
-            alert('Hubo un error al crear la propuesta');
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Hubo un problema al crear la propuesta. Intenta de nuevo.'
+            });
+        } finally {
+            setLoading(false); // Ocultar loader
         }
     };
+
 
     // Mostrar mensajes si no hay datos disponibles
     const candidatosArray = Array.isArray(candidatos) ? candidatos : [];
@@ -55,6 +83,18 @@ const PropuestaForm = () => {
 
     return (
         <div className="container mx-auto p-4">
+            {loading && (
+                <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-xl shadow-xl flex flex-col items-center space-y-4">
+                        <svg className="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                        </svg>
+                        <p className="text-lg font-semibold text-gray-700">Generando resumen con IA...</p>
+                    </div>
+                </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                     <label className="block text-sm font-medium mb-1">Seleccionar Candidato</label>
@@ -109,7 +149,7 @@ const PropuestaForm = () => {
                 <p className="text-sm text-gray-500">El resumen será generado automáticamente por la IA.</p>
                 <button
                     type="submit"
-                    className="bg-blue-500 text-white px-4 py-2 rounded"
+                    className="bg-blue-500 text-white px-4 py-2 rounded-lg"
                 >
                     Crear Propuesta
                 </button>

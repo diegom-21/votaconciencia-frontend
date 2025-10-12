@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar';
 import Modal from '../components/Modal';
 import PropuestaForm from '../components/PropuestaForm';
 import ConfirmModal from '../components/ConfirmModal';
+import PropuestaEditForm from '../components/PropuestaEditForm';
 
 const PropuestasPage = () => {
     const [propuestas, setPropuestas] = useState([]);
@@ -14,20 +15,23 @@ const PropuestasPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
     const [propuestaToDelete, setPropuestaToDelete] = useState(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [selectedPropuesta, setSelectedPropuesta] = useState(null);
+
+    // Mover fetchPropuestas fuera del useEffect para que esté disponible globalmente
+    const fetchPropuestas = async () => {
+        try {
+            const response = await axios.get('/api/propuestas');
+            setPropuestas(Array.isArray(response.data) ? response.data : []);
+            setLoading(false);
+        } catch (error) {
+            console.error('Error al obtener las propuestas:', error);
+            setError('Error al cargar las propuestas');
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchPropuestas = async () => {
-            try {
-                const response = await axios.get('/api/propuestas');
-                setPropuestas(Array.isArray(response.data) ? response.data : []);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error al obtener las propuestas:', error);
-                setError('Error al cargar las propuestas');
-                setLoading(false);
-            }
-        };
-
         fetchPropuestas();
     }, []);
 
@@ -55,7 +59,7 @@ const PropuestasPage = () => {
     const confirmDelete = async () => {
         try {
             await axios.delete(`http://localhost:3000/api/propuestas/${propuestaToDelete}`);
-            setPropuestas(prevPropuestas => 
+            setPropuestas(prevPropuestas =>
                 prevPropuestas.filter(p => p.propuesta_id !== propuestaToDelete)
             );
             setSuccessMessage('Propuesta eliminada con éxito');
@@ -68,6 +72,33 @@ const PropuestasPage = () => {
         } finally {
             setIsConfirmModalOpen(false);
             setPropuestaToDelete(null);
+        }
+    };
+
+    const handleEditPropuesta = (propuesta) => {
+        setSelectedPropuesta(propuesta);
+        setIsEditModalOpen(true);
+    };
+
+    const handleUpdatePropuesta = async (formData) => {
+        try {
+            // Limpiar el estado de error antes de la solicitud
+            setError('');
+
+            await axios.put(`/api/propuestas/${selectedPropuesta.propuesta_id}`, formData);
+            setSuccessMessage('Propuesta actualizada exitosamente');
+            setIsEditModalOpen(false);
+            setSelectedPropuesta(null);
+
+            // Actualizar la tabla sin recargar la página
+            fetchPropuestas();
+
+            setTimeout(() => {
+                setSuccessMessage('');
+            }, 3000);
+        } catch (error) {
+            console.error('Error al actualizar la propuesta:', error);
+            setError('Error al actualizar la propuesta');
         }
     };
 
@@ -135,6 +166,9 @@ const PropuestasPage = () => {
                                         Tema
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Resumen IA
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Acciones
                                     </th>
                                 </tr>
@@ -151,12 +185,34 @@ const PropuestasPage = () => {
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                             {propuesta.nombre_tema}
                                         </td>
+                                        <td>
+                                            {propuesta.resumen_ia && propuesta.resumen_ia.trim() !== "" ? (
+                                                <span className="badge bg-success">
+                                                    ✔ Resumen generado
+                                                </span>
+                                            ) : (
+                                                <span className="badge bg-danger">
+                                                    ✖ Sin resumen
+                                                </span>
+                                            )}
+                                        </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <button className="text-[#0D80F2] hover:text-[#0A6AC8] mr-4">Editar</button>
-                                            <button 
+                                            <button
+                                                className="text-[#0D80F2] hover:text-[#0A6AC8] mr-4"
+                                                onClick={() => handleEditPropuesta(propuesta)}
+                                            >
+                                                <svg className="h-5 w-5 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                </svg>
+                                                Editar
+                                            </button>
+                                            <button
                                                 className="text-red-600 hover:text-red-900"
                                                 onClick={() => handleDelete(propuesta.propuesta_id)}
                                             >
+                                                <svg className="h-5 w-5 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
                                                 Eliminar
                                             </button>
                                         </td>
@@ -174,8 +230,8 @@ const PropuestasPage = () => {
                 title="Nueva Propuesta"
             >
                 <PropuestaForm
-                    onSubmit={handleCreatePropuesta}
-                    onCancel={() => setIsModalOpen(false)}
+                    fetchPropuestas={fetchPropuestas} // Pasar la función para refrescar la tabla
+                    onClose={() => setIsModalOpen(false)} // Cerrar el modal automáticamente
                 />
             </Modal>
 
@@ -185,6 +241,24 @@ const PropuestasPage = () => {
                 onConfirm={confirmDelete}
                 message="¿Estás seguro de que deseas eliminar esta propuesta?"
             />
+
+            <Modal
+                isOpen={isEditModalOpen}
+                onClose={() => {
+                    setIsEditModalOpen(false);
+                    setSelectedPropuesta(null);
+                }}
+                title="Editar Propuesta"
+            >
+                <PropuestaEditForm
+                    initialData={selectedPropuesta}
+                    onSubmit={handleUpdatePropuesta}
+                    onCancel={() => {
+                        setIsEditModalOpen(false);
+                        setSelectedPropuesta(null);
+                    }}
+                />
+            </Modal>
         </div>
     );
 };

@@ -162,16 +162,16 @@ const PartidosPage = () => {
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-50">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Logo
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Nombre
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Fecha de Creación
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Acciones
                                     </th>
                                 </tr>
@@ -179,8 +179,8 @@ const PartidosPage = () => {
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {partidos.map((partido) => (
                                     <tr key={partido.partido_id}>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            {partido.logo_url ? (
+                                        <td className="px-6 py-4 whitespace-nowrap text-center">
+                                            <div className="flex justify-center">{partido.logo_url ? (
                                                 <img
                                                     src={`http://localhost:3000${partido.logo_url}`}
                                                     alt={`Logo de ${partido.nombre}`}
@@ -193,14 +193,15 @@ const PartidosPage = () => {
                                                     </svg>
                                                 </div>
                                             )}
+                                            </div>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
                                             {partido.nombre}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
                                             {new Date(partido.fecha_creacion).toLocaleDateString()}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                             <button
                                                 className="text-[#0D80F2] hover:text-[#0A6AC8] mr-4"
                                                 onClick={() => {

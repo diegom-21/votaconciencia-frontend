@@ -243,7 +243,20 @@ const CandidateForm = ({ onSubmit, initialData, onCancel }) => {
                 </select>
             </div>
 
-
+            <div>
+                <label htmlFor="plan_gobierno_completo" className="block text-sm font-medium text-gray-700 mb-1">
+                    Plan de Gobierno (texto completo)
+                </label>
+                <textarea
+                    id="plan_gobierno_completo"
+                    name="plan_gobierno_completo"
+                    value={formData.plan_gobierno_completo || ''}
+                    onChange={handleChange}
+                    rows="6"
+                    placeholder="Pegue aquí el plan de gobierno completo (sin introducciones innecesarias)"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#0D80F2] focus:border-[#0D80F2]"
+                ></textarea>
+            </div>
 
             <div className="flex justify-end space-x-4 pt-4">
                 <button

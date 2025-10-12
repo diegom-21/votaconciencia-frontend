@@ -17,14 +17,17 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [token, setToken] = useState(null);
+    const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
     // Verificar token al inicio y configurar axios
     useEffect(() => {
         const initAuth = () => {
             const storedToken = localStorage.getItem('token');
-            if (storedToken) {
+            const storedUser = localStorage.getItem('user');
+            if (storedToken && storedUser) {
                 setToken(storedToken);
+                setUser(JSON.parse(storedUser));
                 setIsAuthenticated(true);
                 axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
             }
@@ -37,14 +40,16 @@ export const AuthProvider = ({ children }) => {
     // Función de login
     const login = async (email, password) => {
         try {
-            const response = await axios.post('http://localhost:3000/api/admins/login', {
+            const response = await axios.post('/api/admins/login', {
                 email,
                 password
             });
 
-            const { token } = response.data;
+            const { token, admin } = response.data;
             localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify(admin));
             setToken(token);
+            setUser(admin);
             setIsAuthenticated(true);
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             return true;
@@ -57,7 +62,9 @@ export const AuthProvider = ({ children }) => {
     // Función de logout
     const logout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
         setToken(null);
+        setUser(null);
         setIsAuthenticated(false);
         delete axios.defaults.headers.common['Authorization'];
     };
@@ -65,6 +72,7 @@ export const AuthProvider = ({ children }) => {
     const value = {
         isAuthenticated,
         token,
+        user,
         loading,
         login,
         logout
@@ -76,3 +84,5 @@ export const AuthProvider = ({ children }) => {
         </AuthContext.Provider>
     );
 };
+
+axios.defaults.baseURL = 'http://localhost:3000';
