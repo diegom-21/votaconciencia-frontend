@@ -85,4 +85,5 @@ export const AuthProvider = ({ children }) => {
     );
 };
 
-axios.defaults.baseURL = 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+axios.defaults.baseURL = API_URL;
