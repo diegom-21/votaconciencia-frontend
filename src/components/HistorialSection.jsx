@@ -20,7 +20,7 @@ const HistorialSection = ({ candidatoId, onClose }) => {
         try {
             setLoading(true);
             setError(null);
-            const response = await axios.get(`http://localhost:3000/api/historial/candidato/${candidatoId}`);
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/historial/candidato/${candidatoId}`);
             setHistorial(response.data);
         } catch (error) {
             console.error('Error al cargar historial:', error);
@@ -38,13 +38,13 @@ const HistorialSection = ({ candidatoId, onClose }) => {
 
             if (editingHistorial) {
                 await axios.put(
-                    `http://localhost:3000/api/historial/${editingHistorial.historial_id}`, 
+                    `${import.meta.env.VITE_API_URL}/api/historial/${editingHistorial.historial_id}`, 
                     formData,
                     { headers }
                 );
             } else {
                 await axios.post(
-                    'http://localhost:3000/api/historial', 
+                    `${import.meta.env.VITE_API_URL}/api/historial`, 
                     { ...formData, candidato_id: candidatoId },
                     { headers }
                 );
@@ -63,7 +63,7 @@ const HistorialSection = ({ candidatoId, onClose }) => {
                 setError(null);
                 const token = localStorage.getItem("token");
                 await axios.delete(
-                    `http://localhost:3000/api/historial/${historialId}`,
+                    `${import.meta.env.VITE_API_URL}/api/historial/${historialId}`,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
                 fetchHistorial();

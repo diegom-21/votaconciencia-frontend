@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import Modal from '../components/Modal';
 import PartidoForm from '../components/PartidoForm';
+import { partidosApi, getImageUrl } from '../services/api';
 import Navbar from '../components/Navbar';
 import ConfirmModal from '../components/ConfirmModal';
 
@@ -23,7 +23,7 @@ const PartidosPage = () => {
 
     const fetchPartidos = async () => {
         try {
-            const response = await axios.get('http://localhost:3000/api/partidos');
+            const response = await partidosApi.getAll();
             setPartidos(response.data);
             setLoading(false);
         } catch (error) {
@@ -37,27 +37,11 @@ const PartidosPage = () => {
         try {
             if (selectedPartido) {
                 // Actualizar partido existente
-                await axios.put(
-                    `http://localhost:3000/api/partidos/${selectedPartido.partido_id}`,
-                    formData,
-                    {
-                        headers: {
-                            'Content-Type': 'multipart/form-data',
-                        },
-                    }
-                );
+                await partidosApi.update(selectedPartido.partido_id, formData);
                 setSuccessMessage('Partido actualizado con éxito');
             } else {
                 // Crear nuevo partido
-                await axios.post(
-                    'http://localhost:3000/api/partidos',
-                    formData,
-                    {
-                        headers: {
-                            'Content-Type': 'multipart/form-data',
-                        },
-                    }
-                );
+                await partidosApi.create(formData);
                 setSuccessMessage('Partido creado con éxito');
             }
             
@@ -85,7 +69,7 @@ const PartidosPage = () => {
 
     const confirmDelete = async () => {
         try {
-            await axios.delete(`http://localhost:3000/api/partidos/${partidoToDelete}`);
+            await partidosApi.delete(partidoToDelete);
             setPartidos(prevPartidos => 
                 prevPartidos.filter(p => p.partido_id !== partidoToDelete)
             );
@@ -182,7 +166,7 @@ const PartidosPage = () => {
                                         <td className="px-6 py-4 whitespace-nowrap text-center">
                                             <div className="flex justify-center">{partido.logo_url ? (
                                                 <img
-                                                    src={`http://localhost:3000${partido.logo_url}`}
+                                                    src={getImageUrl(partido.logo_url)}
                                                     alt={`Logo de ${partido.nombre}`}
                                                     className="h-10 w-10 object-contain"
                                                 />

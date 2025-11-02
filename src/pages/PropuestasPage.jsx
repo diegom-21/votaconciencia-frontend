@@ -58,7 +58,7 @@ const PropuestasPage = () => {
 
     const confirmDelete = async () => {
         try {
-            await axios.delete(`http://localhost:3000/api/propuestas/${propuestaToDelete}`);
+            await propuestasApi.delete(propuestaToDelete);
             setPropuestas(prevPropuestas =>
                 prevPropuestas.filter(p => p.propuesta_id !== propuestaToDelete)
             );

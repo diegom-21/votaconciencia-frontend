@@ -20,7 +20,7 @@ const PropuestaForm = ({ fetchPropuestas, onClose }) => {
         // Obtener candidatos
         const fetchCandidatos = async () => {
             try {
-                const response = await axios.get('http://localhost:3000/api/candidatos');
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/candidatos`);
                 setCandidatos(response.data);
             } catch (error) {
                 console.error('Error al obtener los candidatos:', error);
@@ -30,7 +30,7 @@ const PropuestaForm = ({ fetchPropuestas, onClose }) => {
         // Obtener temas
         const fetchTemas = async () => {
             try {
-                const response = await axios.get('http://localhost:3000/api/temas');
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/temas`);
                 setTemas(response.data);
             } catch (error) {
                 console.error('Error al obtener los temas:', error);

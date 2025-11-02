@@ -18,7 +18,7 @@ const PartidoForm = ({ onSubmit, initialData, onCancel }) => {
                 nombre: initialData.nombre
             });
             if (initialData.logo_url) {
-                setLogoPreview(`http://localhost:3000${initialData.logo_url}`);
+                setLogoPreview(`${import.meta.env.VITE_API_URL}${initialData.logo_url}`);
             }
         }
     }, [initialData]);

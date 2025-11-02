@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { temasApi } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import Modal from '../components/Modal';
@@ -38,7 +38,7 @@ const TemasPage = () => {
 
     const fetchTemas = async () => {
         try {
-            const response = await axios.get('http://localhost:3000/api/temas');
+            const response = await temasApi.getAll();
             setTemas(response.data);
             setLoading(false);
         } catch (error) {
@@ -52,17 +52,11 @@ const TemasPage = () => {
         try {
             if (selectedTema) {
                 // Actualizar tema existente
-                await axios.put(
-                    `http://localhost:3000/api/temas/${selectedTema.tema_id}`,
-                    formData
-                );
+                await temasApi.update(selectedTema.tema_id, formData);
                 setSuccessMessage('Tema actualizado con éxito');
             } else {
                 // Crear nuevo tema
-                await axios.post(
-                    'http://localhost:3000/api/temas',
-                    formData
-                );
+                await temasApi.create(formData);
                 setSuccessMessage('Tema creado con éxito');
             }
             
@@ -90,7 +84,7 @@ const TemasPage = () => {
 
     const confirmDelete = async () => {
         try {
-            await axios.delete(`http://localhost:3000/api/temas/${temaToDelete}`);
+            await temasApi.delete(temaToDelete);
             setTemas(prevTemas => 
                 prevTemas.filter(t => t.tema_id !== temaToDelete)
             );

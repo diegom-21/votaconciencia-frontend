@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import axios from 'axios';
+import { partidosApi, getImageUrl } from '../services/api';
 
 const CandidateForm = ({ onSubmit, initialData, onCancel }) => {
     // Estado inicial del formulario
@@ -23,7 +23,7 @@ const CandidateForm = ({ onSubmit, initialData, onCancel }) => {
         if (initialData) {
             setFormData(initialData);
             if (initialData.foto_url) {
-                setFotoPreview(`http://localhost:3000${initialData.foto_url}`);
+                setFotoPreview(getImageUrl(initialData.foto_url));
             }
         }
     }, [initialData]);
@@ -32,7 +32,7 @@ const CandidateForm = ({ onSubmit, initialData, onCancel }) => {
     useEffect(() => {
         const fetchPartidos = async () => {
             try {
-                const response = await axios.get('http://localhost:3000/api/partidos');
+                const response = await partidosApi.getAll();
                 setPartidos(response.data);
                 setLoadingPartidos(false);
             } catch (error) {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { candidatosApi, getImageUrl } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import CandidateForm from '../components/CandidateForm';
@@ -27,7 +27,7 @@ const DashboardPage = () => {
 
     const fetchCandidatos = async () => {
         try {
-            const response = await axios.get('http://localhost:3000/api/candidatos');
+            const response = await candidatosApi.getAll();
             setCandidatos(response.data);
             setLoading(false);
         } catch (error) {
@@ -41,27 +41,11 @@ const DashboardPage = () => {
         try {
             if (selectedCandidato) {
                 // Actualizar candidato existente
-                await axios.put(
-                    `http://localhost:3000/api/candidatos/${selectedCandidato.candidato_id}`,
-                    formData,
-                    {
-                        headers: {
-                            'Content-Type': 'multipart/form-data',
-                        },
-                    }
-                );
+                await candidatosApi.update(selectedCandidato.candidato_id, formData);
                 setSuccessMessage('Candidato actualizado con éxito');
             } else {
                 // Crear nuevo candidato
-                await axios.post(
-                    'http://localhost:3000/api/candidatos',
-                    formData,
-                    {
-                        headers: {
-                            'Content-Type': 'multipart/form-data',
-                        },
-                    }
-                );
+                await candidatosApi.create(formData);
                 setSuccessMessage('Candidato creado con éxito');
             }
             
@@ -89,7 +73,7 @@ const DashboardPage = () => {
 
     const confirmDelete = async () => {
         try {
-            await axios.delete(`http://localhost:3000/api/candidatos/${candidatoToDelete}`);
+            await candidatosApi.delete(candidatoToDelete);
             setCandidatos(prevCandidatos => 
                 prevCandidatos.filter(c => c.candidato_id !== candidatoToDelete)
             );
@@ -195,7 +179,7 @@ const DashboardPage = () => {
                                             <div className="flex items-center">
                                                 {candidato.foto_url ? (
                                                     <img 
-                                                        src={`http://localhost:3000${candidato.foto_url}`}
+                                                        src={getImageUrl(candidato.foto_url)}
                                                         alt={`${candidato.nombre} ${candidato.apellido}`}
                                                         className="w-12 h-12 rounded-full mr-3 object-cover"
                                                     />
@@ -216,7 +200,7 @@ const DashboardPage = () => {
                                             <div className="flex items-center">
                                                 {candidato.partido_logo ? (
                                                     <img
-                                                        src={`http://localhost:3000${candidato.partido_logo}`}
+                                                        src={getImageUrl(candidato.partido_logo)}
                                                         alt={candidato.partido_nombre || 'Logo del partido'}
                                                         className="w-6 h-6 rounded mr-2 object-contain"
                                                     />

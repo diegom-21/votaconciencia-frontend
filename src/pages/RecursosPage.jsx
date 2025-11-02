@@ -166,7 +166,7 @@ const RecursosPage = () => {
                                             <div className="flex items-center justify-center">
                                                 {recurso.imagen_url ? (
                                                     <img
-                                                        src={`http://localhost:3000${recurso.imagen_url}`}
+                                                        src={getImageUrl(recurso.imagen_url)}
                                                         alt={recurso.titulo}
                                                         className="h-10 w-10 rounded object-cover"
                                                     />

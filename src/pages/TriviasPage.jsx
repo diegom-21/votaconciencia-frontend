@@ -191,7 +191,7 @@ const TriviasPage = () => {
                                                 <div className="flex items-center justify-center">
                                                     {tema.imagen_url ? (
                                                         <img
-                                                            src={`http://localhost:3000${tema.imagen_url}`}
+                                                            src={getImageUrl(tema.imagen_url)}
                                                             alt={tema.nombre_tema}
                                                             className="h-10 w-10 rounded-full object-cover"
                                                         />

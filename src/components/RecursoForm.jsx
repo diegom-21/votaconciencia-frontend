@@ -18,7 +18,7 @@ const RecursoForm = ({ initialData, onSubmit, onCancel }) => {
                 esta_publicado: Boolean(initialData.esta_publicado),
             });
             if (initialData.imagen_url) {
-                setImagePreview(`http://localhost:3000${initialData.imagen_url}`);
+                setImagePreview(`${import.meta.env.VITE_API_URL}${initialData.imagen_url}`);
             }
         }
     }, [initialData]);
@@ -120,7 +120,7 @@ const RecursoForm = ({ initialData, onSubmit, onCancel }) => {
                                 type="button"
                                 onClick={() => {
                                     setImageFile(null);
-                                    setImagePreview(initialData?.imagen_url ? `http://localhost:3000${initialData.imagen_url}` : null);
+                                    setImagePreview(initialData?.imagen_url ? `${import.meta.env.VITE_API_URL}${initialData.imagen_url}` : null);
                                 }}
                                 className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full transform translate-x-1/2 -translate-y-1/2 hover:bg-red-600"
                             >
