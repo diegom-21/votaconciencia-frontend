@@ -23,7 +23,7 @@ const PartidosPage = () => {
 
     const fetchPartidos = async () => {
         try {
-            const response = await partidosApi.getAll();
+                        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/partidos`);
             setPartidos(response.data);
             setLoading(false);
         } catch (error) {

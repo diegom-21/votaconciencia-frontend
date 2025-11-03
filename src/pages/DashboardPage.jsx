@@ -27,7 +27,7 @@ const DashboardPage = () => {
 
     const fetchCandidatos = async () => {
         try {
-            const response = await candidatosApi.getAll();
+                        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/candidatos`);
             setCandidatos(response.data);
             setLoading(false);
         } catch (error) {

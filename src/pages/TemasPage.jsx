@@ -38,7 +38,7 @@ const TemasPage = () => {
 
     const fetchTemas = async () => {
         try {
-            const response = await temasApi.getAll();
+                        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/temas`);
             setTemas(response.data);
             setLoading(false);
         } catch (error) {
