@@ -23,7 +23,7 @@ const CandidateForm = ({ onSubmit, initialData, onCancel }) => {
         if (initialData) {
             setFormData(initialData);
             if (initialData.foto_url) {
-                                setFotoPreview(`${import.meta.env.VITE_API_URL}${initialData.foto_url}`);
+                setFotoPreview(getImageUrl(initialData.foto_url));
             }
         }
     }, [initialData]);
@@ -32,7 +32,7 @@ const CandidateForm = ({ onSubmit, initialData, onCancel }) => {
     useEffect(() => {
         const fetchPartidos = async () => {
             try {
-                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/partidos`);
+                const response = await partidosApi.getAll();
                 setPartidos(response.data);
                 setLoadingPartidos(false);
             } catch (error) {

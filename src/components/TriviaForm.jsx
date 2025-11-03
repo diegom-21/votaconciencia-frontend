@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getImageUrl } from '../services/api';
 
 const TriviaForm = ({ initialData, onSubmit, onCancel }) => {
     const [formData, setFormData] = useState({
@@ -18,7 +19,7 @@ const TriviaForm = ({ initialData, onSubmit, onCancel }) => {
                 esta_activo: Boolean(initialData.esta_activo), // Convertir explícitamente a boolean
             });
             if (initialData.imagen_url) {
-                setImagePreview(`${import.meta.env.VITE_API_URL}${initialData.imagen_url}`);
+                setImagePreview(getImageUrl(initialData.imagen_url));
             }
         }
     }, [initialData]);

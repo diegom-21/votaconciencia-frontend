@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { triviasApi, getImageUrl } from '../services/api';
 import Navbar from '../components/Navbar';
 import Modal from '../components/Modal';
 import ConfirmModal from '../components/ConfirmModal';
@@ -28,7 +28,7 @@ const TriviasPage = () => {
 
     const fetchTemas = async () => {
         try {
-            const response = await axios.get('/api/trivias/temas');
+            const response = await triviasApi.getAllTemas();
             setTemas(response.data);
             setLoading(false);
         } catch (error) {
@@ -40,7 +40,7 @@ const TriviasPage = () => {
 
     const fetchPreguntas = async (temaId) => {
         try {
-            const response = await axios.get(`/api/trivias/preguntas/tema/${temaId}`);
+            const response = await triviasApi.getPreguntasByTema(temaId);
             setPreguntas(response.data);
         } catch (error) {
             console.error('Error al obtener las preguntas:', error);
@@ -50,17 +50,11 @@ const TriviasPage = () => {
 
     const handleCreateUpdateTema = async (formData) => {
         try {
-            const config = {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            };
-
             if (selectedTema) {
-                await axios.put(`/api/trivias/temas/${selectedTema.tema_trivia_id}`, formData, config);
+                await triviasApi.updateTema(selectedTema.tema_trivia_id, formData);
                 setSuccessMessage('Tema actualizado exitosamente');
             } else {
-                await axios.post('/api/trivias/temas', formData, config);
+                await triviasApi.createTema(formData);
                 setSuccessMessage('Tema creado exitosamente');
             }
             
@@ -79,11 +73,16 @@ const TriviasPage = () => {
 
     const handleCreateUpdatePregunta = async (formData) => {
         try {
+            const data = {
+                ...formData,
+                tema_trivia_id: expandedTemaId
+            };
+            
             if (selectedPregunta) {
-                await axios.put(`/api/trivias/preguntas/${selectedPregunta.pregunta_id}`, formData);
+                await triviasApi.updatePregunta(selectedPregunta.pregunta_id, data);
                 setSuccessMessage('Pregunta actualizada exitosamente');
             } else {
-                await axios.post('/api/trivias/preguntas', { ...formData, tema_trivia_id: expandedTemaId });
+                await triviasApi.createPregunta(data);
                 setSuccessMessage('Pregunta creada exitosamente');
             }
             
@@ -107,7 +106,7 @@ const TriviasPage = () => {
 
     const confirmDelete = async () => {
         try {
-            await axios.delete(`/api/trivias/temas/${temaToDelete}`);
+            await triviasApi.deleteTema(temaToDelete);
             setTemas(prevTemas => prevTemas.filter(t => t.tema_trivia_id !== temaToDelete));
             setSuccessMessage('Tema eliminado exitosamente');
             setTimeout(() => setSuccessMessage(''), 3000);

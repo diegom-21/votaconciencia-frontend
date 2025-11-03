@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getImageUrl } from '../services/api';
 
 const RecursoForm = ({ initialData, onSubmit, onCancel }) => {
     const [formData, setFormData] = useState({
@@ -19,6 +20,7 @@ const RecursoForm = ({ initialData, onSubmit, onCancel }) => {
             });
             if (initialData.imagen_url) {
                 setImagePreview(`${import.meta.env.VITE_API_URL}${initialData.imagen_url}`);
+                setImagePreview(getImageUrl(initialData.imagen_url));
             }
         }
     }, [initialData]);

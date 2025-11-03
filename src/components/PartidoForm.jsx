@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { getImageUrl } from '../services/api';
 
 const PartidoForm = ({ onSubmit, initialData, onCancel }) => {
     // Estado inicial del formulario
@@ -18,7 +19,7 @@ const PartidoForm = ({ onSubmit, initialData, onCancel }) => {
                 nombre: initialData.nombre
             });
             if (initialData.logo_url) {
-                setLogoPreview(`${import.meta.env.VITE_API_URL}${initialData.logo_url}`);
+                setLogoPreview(getImageUrl(initialData.logo_url));
             }
         }
     }, [initialData]);

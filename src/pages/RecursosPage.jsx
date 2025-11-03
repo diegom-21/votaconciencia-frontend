@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { recursosApi, getImageUrl } from '../services/api';
 import Navbar from '../components/Navbar';
 import Modal from '../components/Modal';
 import ConfirmModal from '../components/ConfirmModal';
@@ -21,7 +21,7 @@ const RecursosPage = () => {
 
     const fetchRecursos = async () => {
         try {
-            const response = await axios.get('/api/recursos');
+            const response = await recursosApi.getAll();
             setRecursos(response.data);
             setLoading(false);
         } catch (error) {
@@ -34,17 +34,12 @@ const RecursosPage = () => {
     const handleCreateUpdate = async (formData) => {
         try {
             setError('');
-            const config = {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            };
-
+            
             if (selectedRecurso) {
-                await axios.put(`/api/recursos/${selectedRecurso.recurso_id}`, formData, config);
+                await recursosApi.update(selectedRecurso.recurso_id, formData);
                 setSuccessMessage('Recurso actualizado exitosamente');
             } else {
-                await axios.post('/api/recursos', formData, config);
+                await recursosApi.create(formData);
                 setSuccessMessage('Recurso creado exitosamente');
             }
             
@@ -68,7 +63,7 @@ const RecursosPage = () => {
 
     const confirmDelete = async () => {
         try {
-            await axios.delete(`/api/recursos/${recursoToDelete}`);
+            await recursosApi.delete(recursoToDelete);
             setRecursos(prevRecursos => prevRecursos.filter(r => r.recurso_id !== recursoToDelete));
             setSuccessMessage('Recurso eliminado exitosamente');
             setTimeout(() => setSuccessMessage(''), 3000);

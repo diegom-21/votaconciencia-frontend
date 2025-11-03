@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import 'sweetalert2/dist/sweetalert2.min.css'; // opcional, para estilos
+import 'sweetalert2/dist/sweetalert2.min.css';
+import { candidatosApi, temasApi, propuestasApi } from '../services/api';
 
 
 const PropuestaForm = ({ fetchPropuestas, onClose }) => {
@@ -17,35 +17,33 @@ const PropuestaForm = ({ fetchPropuestas, onClose }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Obtener candidatos
-        const fetchCandidatos = async () => {
+        // Obtener candidatos y temas
+        const fetchData = async () => {
             try {
-                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/candidatos`);
-                setCandidatos(response.data);
+                const [candidatosRes, temasRes] = await Promise.all([
+                    candidatosApi.getAll(),
+                    temasApi.getAll()
+                ]);
+                setCandidatos(candidatosRes.data);
+                setTemas(temasRes.data);
             } catch (error) {
-                console.error('Error al obtener los candidatos:', error);
+                console.error('Error al obtener los datos:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al cargar los datos necesarios'
+                });
             }
         };
 
-        // Obtener temas
-        const fetchTemas = async () => {
-            try {
-                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/temas`);
-                setTemas(response.data);
-            } catch (error) {
-                console.error('Error al obtener los temas:', error);
-            }
-        };
-
-        fetchCandidatos();
-        fetchTemas();
+        fetchData();
     }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true); // Mostrar loader
         try {
-            await axios.post('/api/propuestas', formData);
+            await propuestasApi.create(formData);
 
             Swal.fire({
                 icon: 'success',
